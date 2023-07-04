@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: coinstats-api
+
+# api ???
+# https://api.coinstats.app/public/v1/coins?skip=0&limit=100&currency=KRW
+api:
+  coinstats:
+    url: https://api.coinstats.app/public/v1/coins

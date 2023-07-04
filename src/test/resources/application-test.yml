@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: coinstats-api
+
+api:
+  coinstats:
+    url: https://api.coinstats.app/public/v1/coins
