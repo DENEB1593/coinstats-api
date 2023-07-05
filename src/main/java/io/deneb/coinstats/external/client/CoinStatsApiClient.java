@@ -1,8 +1,9 @@
 package io.deneb.coinstats.external.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.deneb.coinstats.external.enums.ApiQueryParameter;
+import io.deneb.coinstats.external.model.CoinStatsApiResponse;
 import io.deneb.coinstats.external.properties.CoinStatsProperties;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -13,6 +14,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.io.IOException;
+
 /**
  * 가상화폐 API 통신을 한다.
  */
@@ -22,18 +25,20 @@ public class CoinStatsApiClient {
     private static final Logger log = LoggerFactory.getLogger(CoinStatsApiClient.class);
     private final RestTemplate restTemplate;
     private final CoinStatsProperties properties;
+    private final ObjectMapper objectMapper;
 
     public CoinStatsApiClient(
             @Qualifier("coinStatsRestTemplate") RestTemplate restTemplate,
-            CoinStatsProperties properties) {
+            CoinStatsProperties properties, ObjectMapper objectMapper) {
         this.properties = properties;
         this.restTemplate = restTemplate;
+        this.objectMapper = objectMapper;
     }
 
     /**
      * 가상화폐의 정보를 조회한다.
      */
-    public String getCoins(String currency, Integer limit, Integer skip) {
+    public CoinStatsApiResponse getCoins(String currency, Integer limit, Integer skip) {
 
         UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(properties.url())
                 .queryParam(ApiQueryParameter.CoinStats.getCurrency(), currency)
@@ -52,9 +57,12 @@ public class CoinStatsApiClient {
                     HttpMethod.GET,
                     entity,
                     String.class);
-            return response.getBody();
+            return objectMapper.readValue(response.getBody(), CoinStatsApiResponse.class);
         } catch (HttpClientErrorException e) {
-            log.error("API 통신오류: {}", e.getMessage(), e);
+            log.error("Api call error: {}", e.getMessage(), e);
+            throw new RuntimeException(e.getMessage());
+        } catch (IOException e) {
+            log.error("Json parse error: {}", e.getMessage(), e);
             throw new RuntimeException(e.getMessage());
         }
 

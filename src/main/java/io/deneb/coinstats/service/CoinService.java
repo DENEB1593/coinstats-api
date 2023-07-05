@@ -21,7 +21,7 @@ public class CoinService {
 
     public List<Coin> getCoins(CoinRequest request) {
         // TODO Coin 모델로 변환 필요
-        String coins = client.getCoins(
+        client.getCoins(
                 request.currency(),
                 request.limit(),
                 request.skip());
