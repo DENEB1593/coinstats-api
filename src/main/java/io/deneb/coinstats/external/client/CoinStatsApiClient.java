@@ -3,6 +3,8 @@ package io.deneb.coinstats.external.client;
 import io.deneb.coinstats.external.enums.ApiQueryParameter;
 import io.deneb.coinstats.external.properties.CoinStatsProperties;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -14,10 +16,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 /**
  * 가상화폐 API 통신을 한다.
  */
-@Slf4j
 @Component
 public class CoinStatsApiClient {
 
+    private static final Logger log = LoggerFactory.getLogger(CoinStatsApiClient.class);
     private final RestTemplate restTemplate;
     private final CoinStatsProperties properties;
 
@@ -31,12 +33,12 @@ public class CoinStatsApiClient {
     /**
      * 가상화폐의 정보를 조회한다.
      */
-    public String getCoins() {
+    public String getCoins(String currency, Integer limit, Integer skip) {
 
         UriComponents uriComponents = UriComponentsBuilder.fromHttpUrl(properties.url())
-                .queryParam(ApiQueryParameter.CoinStats.getCurrency(), "")
-                .queryParam(ApiQueryParameter.CoinStats.getLimit(), "")
-                .queryParam(ApiQueryParameter.CoinStats.getSkip(), "")
+                .queryParam(ApiQueryParameter.CoinStats.getCurrency(), currency)
+                .queryParam(ApiQueryParameter.CoinStats.getLimit(), limit)
+                .queryParam(ApiQueryParameter.CoinStats.getSkip(), skip)
                 .build();
 
         HttpHeaders headers = new HttpHeaders();
