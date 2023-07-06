@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.deneb.coinstats.external.enums.ApiQueryParameter;
 import io.deneb.coinstats.external.model.CoinStatsApiResponse;
 import io.deneb.coinstats.external.properties.CoinStatsProperties;
+import io.deneb.coinstats.utils.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -13,8 +14,6 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import java.io.IOException;
 
 /**
  * 가상화폐 API 통신을 한다.
@@ -26,13 +25,17 @@ public class CoinStatsApiClient {
     private final RestTemplate restTemplate;
     private final CoinStatsProperties properties;
     private final ObjectMapper objectMapper;
+    private final JsonUtils jsonUtils;
 
     public CoinStatsApiClient(
             @Qualifier("coinStatsRestTemplate") RestTemplate restTemplate,
-            CoinStatsProperties properties, ObjectMapper objectMapper) {
+            CoinStatsProperties properties,
+            ObjectMapper objectMapper,
+            JsonUtils jsonUtils) {
         this.properties = properties;
         this.restTemplate = restTemplate;
         this.objectMapper = objectMapper;
+        this.jsonUtils = jsonUtils;
     }
 
     /**
@@ -57,12 +60,9 @@ public class CoinStatsApiClient {
                     HttpMethod.GET,
                     entity,
                     String.class);
-            return objectMapper.readValue(response.getBody(), CoinStatsApiResponse.class);
+            return jsonUtils.stringToObj(response.getBody(), CoinStatsApiResponse.class);
         } catch (HttpClientErrorException e) {
             log.error("Api call error: {}", e.getMessage(), e);
-            throw new RuntimeException(e.getMessage());
-        } catch (IOException e) {
-            log.error("Json parse error: {}", e.getMessage(), e);
             throw new RuntimeException(e.getMessage());
         }
 
