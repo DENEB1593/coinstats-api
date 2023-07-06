@@ -7,6 +7,10 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+/**
+ * 코인 정보를 모델링하여 저장한다.
+ * @link https://documenter.getpostman.com/view/5734027/RzZ6Hzr3
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

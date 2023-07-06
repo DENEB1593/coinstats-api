@@ -1,6 +1,7 @@
 package io.deneb.coinstats.service;
 
 import io.deneb.coinstats.external.client.CoinStatsApiClient;
+import io.deneb.coinstats.external.model.CoinStatsApiResponse;
 import io.deneb.coinstats.model.Coin;
 import io.deneb.coinstats.presenter.CoinRequest;
 import org.slf4j.Logger;
@@ -20,11 +21,12 @@ public class CoinService {
     }
 
     public List<Coin> getCoins(CoinRequest request) {
-        // TODO Coin 모델로 변환 필요
-        String coins = client.getCoins(
+        CoinStatsApiResponse response = client.getCoins(
                 request.currency(),
                 request.limit(),
-                request.skip());
-        return null;
+                request.skip()
+        );
+
+        return response.coins();
     }
 }
