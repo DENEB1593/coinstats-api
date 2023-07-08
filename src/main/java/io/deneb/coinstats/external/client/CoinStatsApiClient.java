@@ -1,6 +1,7 @@
 package io.deneb.coinstats.external.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.deneb.coinstats.exception.ApiErrorException;
 import io.deneb.coinstats.external.enums.ApiQueryParameter;
 import io.deneb.coinstats.external.model.CoinStatsApiResponse;
 import io.deneb.coinstats.external.properties.CoinStatsProperties;
@@ -24,17 +25,14 @@ public class CoinStatsApiClient {
     private static final Logger log = LoggerFactory.getLogger(CoinStatsApiClient.class);
     private final RestTemplate restTemplate;
     private final CoinStatsProperties properties;
-    private final ObjectMapper objectMapper;
     private final JsonUtils jsonUtils;
 
     public CoinStatsApiClient(
             @Qualifier("coinStatsRestTemplate") RestTemplate restTemplate,
             CoinStatsProperties properties,
-            ObjectMapper objectMapper,
             JsonUtils jsonUtils) {
         this.properties = properties;
         this.restTemplate = restTemplate;
-        this.objectMapper = objectMapper;
         this.jsonUtils = jsonUtils;
     }
 
@@ -63,7 +61,7 @@ public class CoinStatsApiClient {
             return jsonUtils.stringToObj(response.getBody(), CoinStatsApiResponse.class);
         } catch (HttpClientErrorException e) {
             log.error("Api call error: {}", e.getMessage(), e);
-            throw new RuntimeException(e.getMessage());
+            throw new ApiErrorException("코인 조회에 실패하였습니다.");
         }
 
     }
